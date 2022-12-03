@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+
+<mapper namespace="Board">
+
+
+   <insert id="insert" parameterType="hashmap" useGeneratedKeys="true">
+      <selectKey keyProperty="board_id" resultType="int" order="BEFORE">
+         SELECT SEQ_BOARD.NEXTVAL FROM DUAL
+      </selectKey>
+      <![CDATA[
+      INSERT INTO BOARD(
+         BO_NO, BO_TITLE, BO_CONTENT, BO_WRITER,BO_DATE,BO_HIT
+      ) VALUES(
+         #{bo_id}, #{bo_title}, #{bo_content}, #{bo_writer},sysdate,0
+      )
+         
+      ]]>
+   </insert>
+   
+   <select id = "selectBoard" parameterType = "hashMap" resultType = "hashMap">
+   	select bo_no, bo_title, bo_writer, bo_content, bo_date from board where bo_no = #{bo_no}
+   </select>
+   
+   <update id = "update" parameterType = "hashMap">
+   		UPDATE BOARD
+   		SET 
+   			TITLE = #{bo_title},
+   			CONTENT = #{bo_content},
+   		WHERE bo_no = #{bo_no}
+   </update>
+   <delete id = "delete" parameterType = "hashMap">
+   		delete from board where bo_no = #{bo_no}
+   </delete>
+      
+    
+      <select id="selectBoardList" parameterType="hashMap" resultType="hashMap">
+      SELECT bo_no, bo_title, bo_writer, bo_date
+      FROM BOARD
+      WHERE 1=1
+      <if test = "keyword != null and keyword != ''">
+      	AND
+      	(
+      		TITLE LIKE '%'||#{keyword}||'%' OR
+      		WRITER LIKE '%'||#{keyword}||'%'
+      	)	
+      </if>  
+      ORDER BY INSERT_DATE DESC
+   </select>
+</mapper>
